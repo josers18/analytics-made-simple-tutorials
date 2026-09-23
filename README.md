@@ -14,7 +14,7 @@ This repository contains clean, runnable code, SQL queries, schemas, and automat
 ## Curriculum & Directory Structure
 
 ```text
-analytics-made-simple-code/
+analytics-made-simple-tutorials/
 ├── sql/                   # 14-Part SQL curriculum (SQLite, PostgreSQL, DuckDB)
 ├── python/                # Data manipulation, ETL scripts, and export patterns
 ├── typesafe-ai/           # System One AI & Jev decision engine implementations
