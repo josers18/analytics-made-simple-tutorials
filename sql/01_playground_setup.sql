@@ -1,50 +1,71 @@
--- ====================================================================
--- Part 1: Setting Up a Playground (Analytics Made Simple)
--- Full Tutorial: https://analyticsmadesimple.com/tutorials/tutorial-1-setting-up-sql/
--- ====================================================================
+-- Analytics Made Simple (analyticsmadesimple.com)
+-- Tutorial 1: Setting Up Your SQL Playground (https://analyticsmadesimple.com/tutorials/tutorial-1-setting-up-sql/)
+-- License: MIT
 
 -- 1. Create Customers Table
-DROP TABLE IF EXISTS order_items;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS customers;
-
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
     customer_id INTEGER PRIMARY KEY,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    signup_date DATE NOT NULL,
-    country TEXT NOT NULL
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    region TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 2. Create Orders Table
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     order_id INTEGER PRIMARY KEY,
     customer_id INTEGER NOT NULL,
     order_date DATE NOT NULL,
-    status TEXT NOT NULL,
-    total_amount NUMERIC(10, 2) NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('completed', 'pending', 'cancelled')),
+    order_total DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
--- 3. Seed Sample Customers
-INSERT INTO customers (customer_id, first_name, last_name, email, signup_date, country) VALUES
-(1, 'Alice', 'Morgan', 'alice.m@example.com', '2024-01-15', 'USA'),
-(2, 'Bob', 'Chen', 'bob.chen@example.com', '2024-02-01', 'Canada'),
-(3, 'Carla', 'Gomez', 'carla.g@example.com', '2024-02-14', 'USA'),
-(4, 'David', 'Kim', 'david.k@example.com', '2024-03-10', 'UK'),
-(5, 'Elena', 'Rostova', 'elena.r@example.com', '2024-03-22', 'Germany');
+-- 3. Create Order Lines Table
+CREATE TABLE IF NOT EXISTS order_lines (
+    line_id INTEGER PRIMARY KEY,
+    order_id INTEGER NOT NULL,
+    product_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    unit_price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+);
 
--- 4. Seed Sample Orders
-INSERT INTO orders (order_id, customer_id, order_date, status, total_amount) VALUES
-(101, 1, '2024-02-01', 'completed', 149.99),
-(102, 1, '2024-03-15', 'completed', 89.50),
-(103, 2, '2024-02-18', 'completed', 45.00),
-(104, 3, '2024-03-01', 'cancelled', 210.00),
-(105, 3, '2024-03-20', 'completed', 320.00),
-(106, 4, '2024-03-25', 'pending', 75.25);
+-- 4. Insert Sample Customers
+INSERT INTO customers (customer_id, name, email, region, created_at) VALUES
+(1, 'Acme Industrial', 'ops@acmeind.com', 'North America', '2025-01-10 09:00:00'),
+(2, 'Apex Logistics', 'dispatch@apexlog.com', 'Europe', '2025-01-15 11:30:00'),
+(3, 'Beacon Health', 'admin@beaconhlth.org', 'North America', '2025-02-01 14:15:00'),
+(4, 'Crestview Retail', 'orders@crestview.com', 'Asia-Pacific', '2025-02-12 16:45:00'),
+(5, 'Delta Dynamics', 'billing@deltadyn.io', 'Europe', '2025-03-01 10:00:00');
 
--- 5. Quick Verification
-SELECT 'Playground schema created successfully!' AS status;
-SELECT count(*) AS total_customers FROM customers;
-SELECT count(*) AS total_orders FROM orders;
+-- 5. Insert Sample Orders
+INSERT INTO orders (order_id, customer_id, order_date, status, order_total) VALUES
+(101, 1, '2025-02-10', 'completed', 1450.00),
+(102, 1, '2025-02-25', 'completed', 820.00),
+(103, 2, '2025-03-01', 'completed', 3100.00),
+(104, 3, '2025-03-05', 'pending', 450.00),
+(105, 4, '2025-03-12', 'completed', 1980.00),
+(106, 2, '2025-03-15', 'cancelled', 650.00);
+
+-- 6. Insert Sample Order Lines
+INSERT INTO order_lines (line_id, order_id, product_name, quantity, unit_price) VALUES
+(1, 101, 'Sensor Kit Pro', 2, 500.00),
+(2, 101, 'Connector Cable 5m', 9, 50.00),
+(3, 102, 'Mounting Bracket', 4, 205.00),
+(4, 103, 'Industrial Gateway', 1, 2500.00),
+(5, 103, 'Calibration Module', 2, 300.00),
+(6, 104, 'Power Supply Unit', 3, 150.00),
+(7, 105, 'Sensor Kit Pro', 3, 500.00),
+(8, 105, 'Connector Cable 5m', 8, 60.00);
+
+-- 7. Verification Query
+SELECT 
+    c.name AS customer_name,
+    o.order_id,
+    o.order_date,
+    o.status,
+    o.order_total
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+ORDER BY o.order_id;

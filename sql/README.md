@@ -1,41 +1,49 @@
 # SQL Mastery Curriculum
 
-Companion SQL scripts and playground datasets for the 14-part [SQL Series on Analytics Made Simple](https://analyticsmadesimple.com/series/sql/).
+[![Curriculum](https://img.shields.io/badge/Track-SQL%20Mastery-blue.svg?style=flat-square)](https://analyticsmadesimple.com/tutorials/)
+[![Dialects](https://img.shields.io/badge/Dialects-SQLite%20%7C%20PostgreSQL%20%7C%20DuckDB-orange.svg?style=flat-square)](https://analyticsmadesimple.com)
+[![Interactive Notebook](https://img.shields.io/badge/Jupyter-Interactive%20Playground-green.svg?style=flat-square)](./sql_playground_interactive.ipynb)
 
-All scripts are written to run on standard relational databases (**SQLite**, **PostgreSQL**, or **DuckDB**) without proprietary lock-in.
-
----
-
-## Curriculum Map
-
-| Part | Title | Script | Tutorial Link |
-|------|-------|--------|---------------|
-| **00** | What is SQL? | Conceptual Overview | [Read Tutorial](https://analyticsmadesimple.com/tutorials/what-is-sql/) |
-| **01** | Setting Up a Playground | [`01_playground_setup.sql`](./01_playground_setup.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/tutorial-1-setting-up-sql/) |
-| **02** | Core Commands & Verbs | [`02_core_verbs.sql`](./02_core_verbs.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-2-core-commands/) |
-| **03** | SELECT & Precise Questions | [`03_select_queries.sql`](./03_select_queries.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-3-select/) |
-| **04** | Filtering and Sorting Data | [`04_filtering_sorting.sql`](./04_filtering_sorting.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-4-filter-sort/) |
-| **05** | Aggregates and GROUP BY | [`05_aggregates_grouping.sql`](./05_aggregates_grouping.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-5-aggr-grouping/) |
-| **06** | Joins & Entity Relationships | [`06_joins.sql`](./06_joins.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-6-joins-in-sql/) |
-| **07** | Subqueries in SQL | [`07_subqueries.sql`](./07_subqueries.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-7-subqueries/) |
-| **08** | Modifying Data & Transactions | [`08_modifying_data_transactions.sql`](./08_modifying_data_transactions.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-8-modifying-data-with-sql/) |
-| **09** | Views and Indexes | [`09_views_indexes.sql`](./09_views_indexes.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-9-views-and-indexes/) |
-| **10** | Window Functions and CTEs | [`10_window_functions_ctes.sql`](./10_window_functions_ctes.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-10-advanced-sql-techniques/) |
-| **11** | Stored Procedures & Triggers | [`11_stored_procedures_triggers.sql`](./11_stored_procedures_triggers.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-11-stored-procedures-triggers-and-user-defined-functions/) |
-| **12** | Best Practices & EXPLAIN | [`12_optimization_explain.sql`](./12_optimization_explain.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-12-best-practices-and-optimization/) |
-| **13** | Maintenance & Reliability | [`13_maintenance_runbook.sql`](./13_maintenance_runbook.sql) | [Read Tutorial](https://analyticsmadesimple.com/tutorials/sql-tutorial-13-strategies-for-maintenance-and-optimization/) |
+Welcome to the official SQL Mastery curriculum companion for [Analytics Made Simple](https://analyticsmadesimple.com). This directory contains all SQL scripts, DDL schemas, test queries, and walkthrough documentation corresponding to our 14-part SQL series.
 
 ---
 
-## How to Run Locally
+## Curriculum Index
 
-You can run any of these scripts immediately using SQLite or DuckDB:
+| Part | Topic | Scripts | Walkthrough Guide | Live Article |
+|:---:|:---|:---:|:---:|:---:|
+| **0** | **What is SQL?** | — | [00_what_is_sql.md](./00_what_is_sql.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/what-is-sql/) |
+| **1** | **Playground Setup** | [`01_playground_setup.sql`](./01_playground_setup.sql) | [01_playground_setup.md](./01_playground_setup.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/tutorial-1-setting-up-sql/) |
+| **2** | **Core Commands** | [`02_core_commands.sql`](./02_core_commands.sql) | [02_core_commands.md](./02_core_commands.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-2-core-commands/) |
+| **3** | **Retrieving Data (SELECT)** | [`03_select_queries.sql`](./03_select_queries.sql) | [03_select_queries.md](./03_select_queries.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-3-select/) |
+| **4** | **Filtering & Sorting** | [`04_filtering_and_sorting.sql`](./04_filtering_and_sorting.sql) | [04_filtering_and_sorting.md](./04_filtering_and_sorting.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-4-filter-sort/) |
+| **5** | **Aggregates & GROUP BY** | [`05_aggregates_grouping.sql`](./05_aggregates_grouping.sql) | [05_aggregates_grouping.md](./05_aggregates_grouping.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-5-aggr-grouping/) |
+| **6** | **Joins & Entity Relations** | [`06_joins_and_relationships.sql`](./06_joins_and_relationships.sql) | [06_joins_and_relationships.md](./06_joins_and_relationships.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-6-joins-in-sql/) |
+| **7** | **Subqueries** | [`07_subqueries.sql`](./07_subqueries.sql) | [07_subqueries.md](./07_subqueries.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-7-subqueries/) |
+| **8** | **Modifying Data & Transactions** | [`08_modifying_data_transactions.sql`](./08_modifying_data_transactions.sql) | [08_modifying_data_transactions.md](./08_modifying_data_transactions.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-8-modifying-data-with-sql/) |
+| **9** | **Views and Indexes** | [`09_views_and_indexes.sql`](./09_views_and_indexes.sql) | [09_views_and_indexes.md](./09_views_and_indexes.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-9-views-and-indexes/) |
+| **10** | **Advanced SQL (CTEs & Windows)** | [`10_advanced_ctes_window_functions.sql`](./10_advanced_ctes_window_functions.sql) | [10_advanced_ctes_window_functions.md](./10_advanced_ctes_window_functions.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-10-advanced-sql-techniques/) |
+| **11** | **Stored Procedures & Triggers** | [`11_stored_procedures_triggers.sql`](./11_stored_procedures_triggers.sql) | [11_stored_procedures_triggers.md](./11_stored_procedures_triggers.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-11-stored-procedures-triggers-and-user-defined-functions/) |
+| **12** | **Optimization & EXPLAIN** | [`12_optimization_and_explain.sql`](./12_optimization_and_explain.sql) | [12_optimization_and_explain.md](./12_optimization_and_explain.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-12-best-practices-and-optimization/) |
+| **13** | **Maintenance & Growth** | [`13_database_maintenance.sql`](./13_database_maintenance.sql) | [13_database_maintenance.md](./13_database_maintenance.md) | [Read on AMS ↗](https://analyticsmadesimple.com/tutorials/sql-tutorial-13-strategies-for-maintenance-and-optimization/) |
 
+---
+
+## Quickstart
+
+### Option A: Interactive Jupyter Notebook (Recommended)
+Open [`sql_playground_interactive.ipynb`](./sql_playground_interactive.ipynb) directly in VS Code, JupyterLab, or Google Colab to execute queries with instant tabular output.
+
+### Option B: SQLite CLI
 ```bash
-# Option A: SQLite (Pre-installed on macOS/Linux)
-sqlite3 playground.db < 01_playground_setup.sql
-sqlite3 playground.db < 03_select_queries.sql
+# Initialize database
+sqlite3 ams_playground.db < sql/01_playground_setup.sql
 
-# Option B: DuckDB
-duckdb playground.duckdb < 01_playground_setup.sql
+# Run any lesson
+sqlite3 ams_playground.db < sql/06_joins_and_relationships.sql
+```
+
+### Option C: DuckDB
+```bash
+duckdb -c ".read sql/01_playground_setup.sql" -c ".read sql/10_advanced_ctes_window_functions.sql"
 ```
