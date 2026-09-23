@@ -2,7 +2,7 @@
 
 > **Official Companion Guide for [Analytics Made Simple: What is SQL?](https://analyticsmadesimple.com/tutorials/what-is-sql/)**
 
-SQL (Structured Query Language) is the universal standard for asking precise questions of structured data. While spreadsheets give you a visual canvas for small ad-hoc tables, relational databases and SQL provide the engine for high-volume, reliable data systems.
+SQL (Structured Query Language) is the universal standard for querying, transforming, and managing structured data. While spreadsheets give you a visual canvas for small ad-hoc tables, relational databases and SQL provide the engine for high-volume, reliable data systems.
 
 ---
 
@@ -16,18 +16,54 @@ Data is organized into **tables** (relations) consisting of **rows** (records) a
 ### 2. SQL vs. Spreadsheets
 
 | Dimension | Spreadsheets (Excel / Sheets) | Relational SQL Databases (PostgreSQL / SQLite) |
-|---|---|---|
-| **Data Capacity** | ~1M rows maximum; slows down >100k rows | Millions to billions of rows with indexing |
-| **Integrity & Constraints** | Accidental cell overwrites, loose data types | Strict schema enforcement, types, foreign key integrity |
-| **Concurrent Users** | Version conflicts, locked files | Thousands of simultaneous reads and transactions (ACID) |
-| **Reproducibility** | Manual copy-paste, hidden formula edits | Scriptable, version-controlled queries with exact lineage |
+|:---|:---|:---|
+| **Max Scale** | ~1 million rows (slows down at 100k) | Billions of rows with B-Tree indexes |
+| **Data Integrity** | Prone to copy-paste drift, mixed types | Enforced schemas, types, and constraints |
+| **Concurrency** | Lockups on multi-user writes | ACID transactions and row-level locking |
+| **Automation** | Fragile macros and manual exports | Programmatic scheduled queries and pipelines |
 
-### 3. Popular SQL Engines
-* **SQLite:** Embedded, zero-configuration, single-file database. Perfect for practice, mobile apps, and edge analytics.
-* **PostgreSQL:** The gold-standard open-source production database. Supports rich data types, JSON, window functions, and extensions.
-* **DuckDB:** The "SQLite for analytics" — columnar, vectorized execution engine designed for local analytical processing and Parquet queries.
+---
+
+## The Core SQL Grammar in Action
+
+Here is what foundational SQL looks like. You can run these commands directly in any standard database engine:
+
+```sql
+-- 1. Create a table with defined types and constraints
+CREATE TABLE IF NOT EXISTS customers (
+    customer_id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    region TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Insert structured records
+INSERT INTO customers (customer_id, name, region) VALUES
+(1, 'Acme Industrial', 'North America'),
+(2, 'Apex Logistics', 'Europe'),
+(3, 'Beacon Health', 'North America');
+
+-- 3. Query the data with filtering and column selection
+SELECT 
+    customer_id, 
+    name, 
+    region 
+FROM customers 
+WHERE region = 'North America'
+ORDER BY customer_id;
+```
+
+### Expected Query Output
+
+| customer_id | name | region |
+|:---|:---|:---|
+| 1 | Acme Industrial | North America |
+| 3 | Beacon Health | North America |
 
 ---
 
 ## Next Steps
-Proceed to [Part 1: Setting Up Your SQL Playground](./01_playground_setup.md) to initialize your local practice database.
+
+Now that you understand what SQL is and why it powers every modern analytics stack, set up your safe local database environment:
+
+👉 Next: [Part 1: Setting Up Your SQL Playground](./01_playground_setup.md)

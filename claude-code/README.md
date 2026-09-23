@@ -13,7 +13,7 @@ Official open-source companion for the Claude Code and terminal agent engineerin
 |:---|:---|:---:|
 | **Terminal Setup & Quickstart** | macOS, Linux, and Windows installation, authentication, and core shortcuts | [01_terminal_setup_and_quickstart.md](./01_terminal_setup_and_quickstart.md) |
 | **Instruction Templates** | Production `CLAUDE.md` and `AGENTS.md` configuration files for analytics | [`02_instruction_templates/`](./02_instruction_templates/) |
-| **Automated Review Workflow** | Shell script executing automated pre-commit code reviews | [`03_automated_code_review_workflow.sh`](./03_automated_code_review_workflow.sh) |
+| **Automated Review Workflow** | Shell script executing automated pre-commit code reviews | [`03_automated_code_review_workflow.sh`](./03_automated_code_review_workflow.sh) · [Guide](./03_automated_code_review_workflow.md) |
 | **Data Analyst Agent Guide** | Workflows for schema audits, SQL-to-Python translation, and documentation | [04_data_analyst_agent_guide.md](./04_data_analyst_agent_guide.md) |
 
 ---
