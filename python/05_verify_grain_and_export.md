@@ -46,10 +46,14 @@ orders_df = pd.DataFrame({
 if not verify_grain(orders_df, ["order_id"]):
     sys.exit(1)
 
-# Export clean artifacts
+# Export clean artifacts. CSV always works. Parquet needs pyarrow or fastparquet.
 orders_df.to_csv("clean_orders.csv", index=False)
-orders_df.to_parquet("clean_orders.parquet", index=False)
-print("📦 Clean datasets exported to clean_orders.csv and clean_orders.parquet")
+try:
+    orders_df.to_parquet("clean_orders.parquet", index=False)
+except ImportError:
+    print("CSV written to clean_orders.csv. Parquet needs pyarrow: pip install pyarrow")
+else:
+    print("Clean datasets exported to clean_orders.csv and clean_orders.parquet")
 ```
 
 ---

@@ -3,7 +3,7 @@
 > **Official Companion Guide for [Analytics Made Simple: Gemini CLI & Antigravity](https://analyticsmadesimple.com/series/gemini/)**
 > Raw Script: [`03_gemini_cli_antigravity_workflows.sh`](./03_gemini_cli_antigravity_workflows.sh)
 
-Master the 4-step developer cadence: **Ask → Edit → Test → Review**.
+This script builds a one-file practice repo and shows the division-by-zero error. It then prints the real `agy -p` command. It does not call the model for you.
 
 ---
 
@@ -14,42 +14,55 @@ Below is the workflow setup contained in [`03_gemini_cli_antigravity_workflows.s
 ```bash
 #!/usr/bin/env bash
 # Analytics Made Simple (analyticsmadesimple.com)
-# Tutorial: Gemini CLI & Antigravity Loop (Ask -> Edit -> Test -> Review)
+# Tutorial: a tiny repo for Antigravity CLI (agy) or Gemini CLI
 # Series: Gemini Coding Tutorial
 # License: MIT
+#
+# The one-off prompt flag is -p. There is no "gemini prompt" subcommand.
+# For individual accounts the current terminal binary is agy.
 
 set -euo pipefail
 
-echo "🤖 Initializing Gemini CLI & Antigravity Practice Environment..."
-
-WORK_DIR="$HOME/sandbox/gemini-cli-practice"
+WORK_DIR="${HOME}/sandbox/gemini-cli-practice"
 mkdir -p "$WORK_DIR"
 cd "$WORK_DIR"
 
-if [ ! -d ".git" ]; then
-    git init
-    cat << 'EOF' > pipeline.py
+if [ ! -d .git ]; then
+  git init
+  cat > pipeline.py << 'PY'
 def calculate_growth(prior, current):
-    # Bug: Missing zero division check
     return (current - prior) / prior
 
-print(calculate_growth(100, 150))
-EOF
-    git add pipeline.py
-    git commit -m "add pipeline for gemini refactor"
+
+if __name__ == "__main__":
+    print("100 to 150:", calculate_growth(100, 150))
+    print("0 to 10:", calculate_growth(0, 10))
+PY
+  git add pipeline.py
+  git commit -m "add pipeline with an unguarded division"
 fi
 
-echo "
-🔄 The 4-Step Antigravity Loop:
-1. ASK:
-   'gemini prompt "Explain the error in calculate_growth() in pipeline.py when prior is 0."'
-2. EDIT:
-   Let the agent make a focused, minimal change with safe guardrails.
-3. TEST:
-   Run unit tests locally (python3 pipeline.py).
-4. REVIEW:
-   Inspect git diff before committing!
-"
+echo "Practice repo: ${WORK_DIR}"
+echo "The second call divides by zero, so Python stops:"
+set +e
+python3 pipeline.py
+status=$?
+set -e
+echo "python3 exited ${status}"
+
+cat << 'EOF'
+
+Ask Antigravity CLI from this folder. The binary is agy:
+
+  agy -p "In pipeline.py, calculate_growth divides by prior. When prior is 0 that raises ZeroDivisionError. Guard that case. Keep the 100 to 150 result."
+
+gemini -p is the same shape if Gemini CLI is still signed in with an API key.
+
+Then run:
+
+  python3 pipeline.py
+  git diff
+EOF
 ```
 
 ---
