@@ -16,30 +16,32 @@ Below is the complete bash review script contained in [`03_automated_code_review
 # Analytics Made Simple (analyticsmadesimple.com)
 # Automated Code Review Workflow using Claude Code
 # License: MIT
+#
+# Uses `claude -p` (non-interactive print mode). There is no --prompt flag.
 
 set -euo pipefail
 
-echo "🔍 Running Automated Repository Health Check..."
-
-# 1. Check for unstaged changes
-if ! git diff --quiet; then
-    echo "⚠️  Unstaged changes detected. Generating review diff..."
-    git diff > /tmp/claude_review_diff.patch
-    echo "✅ Diff saved to /tmp/claude_review_diff.patch"
+if ! command -v claude >/dev/null 2>&1; then
+  echo "Claude Code is not on PATH. Install it, then run this script again."
+  exit 1
 fi
 
-# 2. Invoke Claude Code in non-interactive review mode
-echo "🤖 Triggering Claude Code review pass..."
-claude --prompt "Please review the latest git changes for potential grain violations, missing SQL indexes, and unhandled null values. Provide concise, bulleted feedback."
+if git diff --quiet && git diff --cached --quiet; then
+  echo "No unstaged or staged changes. Nothing to review."
+  exit 0
+fi
 
-echo "✅ Review complete!"
+git diff HEAD > /tmp/claude_review_diff.patch
+echo "Diff saved to /tmp/claude_review_diff.patch"
+
+claude -p "Review the current git changes for grain violations, missing SQL indexes, and unhandled nulls. Use bullets. If none of those are in the diff, say so. Do not invent a finding."
 ```
 
 ---
 
 ## How It Works
 
-1. **Diff Extraction:** `DIFF=$(git diff HEAD)` extracts all staged and unstaged code changes.
+1. **Diff extraction:** `git diff HEAD` writes staged and unstaged changes to `/tmp/claude_review_diff.patch`.
 2. **Safety Check:** If no changes exist, the script terminates immediately with exit code 0.
 3. **Headless Agent Invocation:** `claude -p "..."` runs Claude Code in headless prompt mode, injecting the exact diff into a specialized review prompt that checks for:
    * Non-sargable SQL functions (e.g. `strftime()` in `WHERE` clauses)
