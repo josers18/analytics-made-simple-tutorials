@@ -3,25 +3,25 @@
 > **Official Companion Guide for [Analytics Made Simple: Custom GPTs Tutorial](https://analyticsmadesimple.com/series/chatgpt/)**
 > Raw Schema: [`04_custom_gpt_action_openapi_schema.json`](./04_custom_gpt_action_openapi_schema.json)
 
-Custom GPTs become true enterprise agents when connected to live databases via OpenAPI 3.1 Actions.
+This is the shape of a Custom GPT Action. The server URL is `https://example.com/v1` on purpose. Analytics Made Simple does not host this API. Point `servers[0].url` at an API you actually run before you ship the action.
 
 ---
 
 ## The Complete OpenAPI 3.1 Specification
 
-Below is the production-ready Action schema contained in [`04_custom_gpt_action_openapi_schema.json`](./04_custom_gpt_action_openapi_schema.json):
+Below is the example Action schema contained in [`04_custom_gpt_action_openapi_schema.json`](./04_custom_gpt_action_openapi_schema.json):
 
 ```json
 {
  "openapi": "3.1.0",
  "info": {
   "title": "Analytics Made Simple Data Warehouse API",
-  "description": "Custom GPT Action schema for querying verified company metrics and order records.",
+  "description": "Example Custom GPT Action shape. example.com is a placeholder. Analytics Made Simple does not host this API.",
   "version": "1.0.0"
  },
  "servers": [
   {
-   "url": "https://api.analyticsmadesimple.com/v1"
+   "url": "https://example.com/v1"
   }
  ],
  "paths": {

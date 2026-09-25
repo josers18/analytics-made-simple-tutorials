@@ -1,51 +1,21 @@
-# Grok Tutorial 4: Grok Imagine Visual Prompt Engineering
+# Grok Imagine prompt: one object, exact lettering
 
-> **Official Companion Guide for [Analytics Made Simple: Grok Imagine](https://analyticsmadesimple.com/series/grok/)**
-> Raw Script: [`04_grok_imagine_prompt_engineering.py`](./04_grok_imagine_prompt_engineering.py)
+> **Official companion for [Learn Grok](https://analyticsmadesimple.com/series/grok/)**
 
-Generate publication-grade visual assets and diagrams with Grok Imagine by enforcing tangible physical metaphors and strict text spelling constraints.
+This file is a prompt. Paste it into Imagine. It does not generate an image by itself.
 
----
+## Paste this
 
-## The Complete Python Script
-
-Below is the prompt compiler contained in [`04_grok_imagine_prompt_engineering.py`](./04_grok_imagine_prompt_engineering.py):
-
-```python
-"""
-Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: Grok Imagine Visual Prompt Engineering
-Series: Grok Imagine Tutorial
-License: MIT
-"""
-
-def compile_imagine_prompt(topic: str, background_palette: str, focal_object: str, lettering: str) -> str:
-    """Compiles a high-contrast editorial prompt optimized for Grok Imagine text rendering."""
-    return f"""A clean, high-contrast editorial still representing {topic}.
-Setting: Solid matte {background_palette} background with subtle studio shadows.
-Hero Object: A tangible, wordless {focal_object} placed neatly in center-right third.
-Typography: Bold, clean sans-serif text clearly displaying: "{lettering}".
-Lighting: Diffuse softbox lighting, crisp edges, minimal noise, publication-grade finish.
-No cluttered desks, no generic laptops, no misspelled lettering.
-"""
-
-if __name__ == "__main__":
-    p = compile_imagine_prompt(
-        topic="Database Indexing and B-Tree Search",
-        background_palette="warm cream (#FBF9F5)",
-        focal_object="golden brass magnifying glass focusing on an engraved circuit path",
-        lettering="INDEX SCAN"
-    )
-    print("=== Grok Imagine Prompt ===")
-    print(p)
+```text
+A clean editorial still of database indexing.
+Setting: solid matte warm cream background, soft studio shadow.
+Hero object: a brass magnifying glass over a simple engraved path, center-right. No laptop, no desk clutter.
+Lettering: the words INDEX SCAN, bold sans-serif, spelled exactly that way.
+No extra words, no logo, no people.
 ```
 
----
+If the letters come back wrong, ask for an edit of the lettering only and repeat the exact words.
 
-## How to Run
+## Next
 
-```bash
-python3 grok/04_grok_imagine_prompt_engineering.py
-```
-
-👉 Explore the interactive notebook: [grok_analytics_and_code_loop.ipynb](./grok_analytics_and_code_loop.ipynb)
+Back to the [Grok folder](./README.md).

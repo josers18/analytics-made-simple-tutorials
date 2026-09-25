@@ -1,39 +1,64 @@
 """
 Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: System One Decision Layers for Routing
-Canonical Article: https://analyticsmadesimple.com/tutorials/
+Tutorial: Route a payment with a System One choice and score
+https://analyticsmadesimple.com/tutorials/system-one-models-fast-decision-layer-for-software/
 License: MIT
+
+Install: pip install typesafe-sdk
+Run:     export TYPESAFE_API_KEY=... && python3 02_sentiment_and_routing_pipeline.py
+
+Jev picks the route and the risk score. The if-statement only reads those fields.
+The script stops when the key or the SDK is missing.
 """
 
-def evaluate_risk_and_route(transaction_id: str, amount: float, account_age_days: int) -> dict:
-    """Evaluate financial transaction risk with two-axis confidence gating."""
-    # Fast decision heuristic mapping System One model outputs
-    is_high_amount = amount > 5000.0
-    is_new_account = account_age_days < 14
-    
-    if is_high_amount and is_new_account:
-        risk_score = 0.94
-        decision = "flag_manual_review"
-    elif is_high_amount:
-        risk_score = 0.65
-        decision = "require_2fa_step_up"
-    else:
-        risk_score = 0.08
-        decision = "auto_approve"
-        
-    return {
-        "transaction_id": transaction_id,
-        "amount": amount,
-        "account_age_days": account_age_days,
-        "risk_confidence": risk_score,
-        "routing_decision": decision
+import os
+import sys
+
+
+def main() -> None:
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("Set TYPESAFE_API_KEY and run again.")
+    try:
+        from typesafe_sdk import Choice, Score, TypeSafeClient
+    except ImportError:
+        sys.exit("Install the SDK first: pip install typesafe-sdk")
+
+    state = {
+        "transaction_id": "TX-801",
+        "amount": 6200.00,
+        "account_age_days": 3,
+        "note": "New account. Wire to a first-time beneficiary, requested by email at 02:14.",
     }
+    questions = {
+        "route": Choice(
+            instructions="Where should this payment go, given `amount`, `account_age_days`, and `note`?",
+            criteria={
+                "auto_approve": "Small, ordinary payment on an established account",
+                "step_up": "Large payment that still fits the account history",
+                "manual_review": "New account, unusual hour, or a first-time beneficiary",
+            },
+        ),
+        "risk": Score(
+            instructions="How risky is this payment?",
+            criteria=[
+                "Ordinary spend on a known account",
+                "Larger than usual, but the account history still fits",
+                "New account or a first-time destination that a person should see",
+            ],
+        ),
+    }
+    with TypeSafeClient() as client:
+        response = client.system_one(state=state, questions=questions)
+
+    route = response.choices["route"]
+    risk = response.scores["risk"]
+    print(f"Route: {route.choice} (Confidence: {route.confidence:.2f})")
+    print(f"Risk score: {risk.score:.2f} / 2.0 (Confidence: {risk.confidence:.2f})")
+    if route.choice == "manual_review" and route.confidence >= 0.80:
+        print("Action: queue_for_a_person")
+    else:
+        print(f"Action: {route.choice}")
+
 
 if __name__ == "__main__":
-    txs = [
-        ("TX-801", 6200.00, 3),
-        ("TX-802", 7500.00, 180),
-        ("TX-803", 45.00, 450)
-    ]
-    for tid, amt, age in txs:
-        print(evaluate_risk_and_route(tid, amt, age))
+    main()

@@ -46,6 +46,5 @@ def clean_company_name(name):
 
 raw_leads["company_standard"] = raw_leads["company_raw"].apply(clean_company_name)
 
-print("
-=== Standardized Leads ===")
+print("=== Standardized Leads ===")
 print(raw_leads[["lead_id", "company_standard", "channel_clean"]])

@@ -52,6 +52,5 @@ df_summary.to_sql("customer_segments", conn, index=False, if_exists="replace")
 
 # Verify written table in SQL
 res = pd.read_sql_query("SELECT * FROM customer_segments", conn)
-print("
-=== Enriched Table Read Back from SQL ===")
+print("=== Enriched Table Read Back from SQL ===")
 print(res)

@@ -22,18 +22,15 @@ print(selected)
 
 # 2. Boolean Filtering (WHERE status = 'completed' AND order_total >= 1000)
 high_value_completed = df[(df["status"] == "completed") & (df["order_total"] >= 1000.00)]
-print("
-=== High Value Completed Orders ===")
+print("=== High Value Completed Orders ===")
 print(high_value_completed)
 
 # 3. Range Filtering (WHERE region IN ('Europe', 'Asia-Pacific'))
 international = df[df["region"].isin(["Europe", "Asia-Pacific"])]
-print("
-=== International Orders ===")
+print("=== International Orders ===")
 print(international)
 
 # 4. Sorting (ORDER BY region ASC, order_total DESC)
 sorted_df = df.sort_values(by=["region", "order_total"], ascending=[True, False])
-print("
-=== Sorted DataFrame ===")
+print("=== Sorted DataFrame ===")
 print(sorted_df)

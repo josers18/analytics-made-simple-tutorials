@@ -2,12 +2,12 @@
  "openapi": "3.1.0",
  "info": {
   "title": "Analytics Made Simple Data Warehouse API",
-  "description": "Custom GPT Action schema for querying verified company metrics and order records.",
+  "description": "Example Custom GPT Action shape. example.com is a placeholder. Analytics Made Simple does not host this API.",
   "version": "1.0.0"
  },
  "servers": [
   {
-   "url": "https://api.analyticsmadesimple.com/v1"
+   "url": "https://example.com/v1"
   }
  ],
  "paths": {

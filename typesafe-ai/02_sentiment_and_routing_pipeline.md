@@ -1,74 +1,91 @@
-# TypeSafe AI Tutorial 2: Risk Scoring & Routing Pipeline
+# Route a payment from a choice and a score
 
-> **Official Companion Guide for [Analytics Made Simple: System One Models](https://analyticsmadesimple.com/tutorials/)**
-> Raw Script: [`02_sentiment_and_routing_pipeline.py`](./02_sentiment_and_routing_pipeline.py)
+> **Official companion for [System One models](https://analyticsmadesimple.com/tutorials/system-one-models-fast-decision-layer-for-software/)**
+> Raw script: [`02_sentiment_and_routing_pipeline.py`](./02_sentiment_and_routing_pipeline.py)
 
-Explore two-axis confidence gating and deterministic branching for fraud and risk management.
+The model returns a route and a risk score. The `if` reads `response.choices['route']`. It does not decide the route by comparing the dollar amount itself.
 
----
-
-## The Complete Python Script
-
-Below is the complete script contained in [`02_sentiment_and_routing_pipeline.py`](./02_sentiment_and_routing_pipeline.py):
+## The script
 
 ```python
 """
 Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: System One Decision Layers for Routing
-Canonical Article: https://analyticsmadesimple.com/tutorials/
+Tutorial: Route a payment with a System One choice and score
+https://analyticsmadesimple.com/tutorials/system-one-models-fast-decision-layer-for-software/
 License: MIT
+
+Install: pip install typesafe-sdk
+Run:     export TYPESAFE_API_KEY=... && python3 02_sentiment_and_routing_pipeline.py
+
+Jev picks the route and the risk score. The if-statement only reads those fields.
+The script stops when the key or the SDK is missing.
 """
 
-def evaluate_risk_and_route(transaction_id: str, amount: float, account_age_days: int) -> dict:
-    """Evaluate financial transaction risk with two-axis confidence gating."""
-    # Fast decision heuristic mapping System One model outputs
-    is_high_amount = amount > 5000.0
-    is_new_account = account_age_days < 14
-    
-    if is_high_amount and is_new_account:
-        risk_score = 0.94
-        decision = "flag_manual_review"
-    elif is_high_amount:
-        risk_score = 0.65
-        decision = "require_2fa_step_up"
-    else:
-        risk_score = 0.08
-        decision = "auto_approve"
-        
-    return {
-        "transaction_id": transaction_id,
-        "amount": amount,
-        "account_age_days": account_age_days,
-        "risk_confidence": risk_score,
-        "routing_decision": decision
+import os
+import sys
+
+
+def main() -> None:
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("Set TYPESAFE_API_KEY and run again.")
+    try:
+        from typesafe_sdk import Choice, Score, TypeSafeClient
+    except ImportError:
+        sys.exit("Install the SDK first: pip install typesafe-sdk")
+
+    state = {
+        "transaction_id": "TX-801",
+        "amount": 6200.00,
+        "account_age_days": 3,
+        "note": "New account. Wire to a first-time beneficiary, requested by email at 02:14.",
     }
+    questions = {
+        "route": Choice(
+            instructions="Where should this payment go, given `amount`, `account_age_days`, and `note`?",
+            criteria={
+                "auto_approve": "Small, ordinary payment on an established account",
+                "step_up": "Large payment that still fits the account history",
+                "manual_review": "New account, unusual hour, or a first-time beneficiary",
+            },
+        ),
+        "risk": Score(
+            instructions="How risky is this payment?",
+            criteria=[
+                "Ordinary spend on a known account",
+                "Larger than usual, but the account history still fits",
+                "New account or a first-time destination that a person should see",
+            ],
+        ),
+    }
+    with TypeSafeClient() as client:
+        response = client.system_one(state=state, questions=questions)
+
+    route = response.choices["route"]
+    risk = response.scores["risk"]
+    print(f"Route: {route.choice} (Confidence: {route.confidence:.2f})")
+    print(f"Risk score: {risk.score:.2f} / 2.0 (Confidence: {risk.confidence:.2f})")
+    if route.choice == "manual_review" and route.confidence >= 0.80:
+        print("Action: queue_for_a_person")
+    else:
+        print(f"Action: {route.choice}")
+
 
 if __name__ == "__main__":
-    txs = [
-        ("TX-801", 6200.00, 3),
-        ("TX-802", 7500.00, 180),
-        ("TX-803", 45.00, 450)
-    ]
-    for tid, amt, age in txs:
-        print(evaluate_risk_and_route(tid, amt, age))
+    main()
 ```
 
----
-
-## Expected Output
-
-```json
-{'transaction_id': 'TX-801', 'amount': 6200.0, 'account_age_days': 3, 'risk_confidence': 0.94, 'routing_decision': 'flag_manual_review'}
-{'transaction_id': 'TX-802', 'amount': 7500.0, 'account_age_days': 180, 'risk_confidence': 0.65, 'routing_decision': 'require_2fa_step_up'}
-{'transaction_id': 'TX-803', 'amount': 45.0, 'account_age_days': 450, 'risk_confidence': 0.08, 'routing_decision': 'auto_approve'}
-```
-
----
-
-## How to Run
+## How to run
 
 ```bash
-python3 typesafe-ai/02_sentiment_and_routing_pipeline.py
+pip install typesafe-sdk
+export TYPESAFE_API_KEY=your_key
+python3 02_sentiment_and_routing_pipeline.py
 ```
 
-👉 Explore the interactive notebook: [typesafe_ai_decision_layer.ipynb](./typesafe_ai_decision_layer.ipynb)
+If the key or the SDK is missing, the script stops. It does not print a made-up answer.
+
+
+
+## Next
+
+[Back to the folder](./README.md)

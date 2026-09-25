@@ -22,11 +22,9 @@ df = pd.DataFrame(data)
 print("=== DataFrame Schema & Types ===")
 print(df.info())
 
-print("
-=== Summary Statistics (like SQL AVG/MIN/MAX) ===")
+print("=== Summary Statistics (like SQL AVG/MIN/MAX) ===")
 print(df.describe())
 
 # 3. Viewing Top Rows (like SELECT * FROM orders LIMIT 3)
-print("
-=== Head (Limit 3) ===")
+print("=== Head (Limit 3) ===")
 print(df.head(3))

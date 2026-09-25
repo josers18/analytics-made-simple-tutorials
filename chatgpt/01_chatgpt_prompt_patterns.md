@@ -1,70 +1,33 @@
-# ChatGPT Tutorial 1: Structured Everyday Prompt Patterns
+# ChatGPT prompt: weekly records, no invented numbers
 
-> **Official Companion Guide for [Analytics Made Simple: ChatGPT Everyday Workflows](https://analyticsmadesimple.com/series/chatgpt/)**
-> Raw Script: [`01_chatgpt_prompt_patterns.py`](./01_chatgpt_prompt_patterns.py)
+> **Official companion for [Learn ChatGPT](https://analyticsmadesimple.com/series/chatgpt/)**
 
-Moving beyond conversational chitchat to reliable analytical assistance requires disciplined prompt engineering: role constraints, explicit negative guardrails, and deterministic schema definitions.
+This file is a prompt. Paste it into ChatGPT with the records under it. It does not call an API.
 
----
+To send the same job through the OpenAI Python SDK, use [`05_openai_chat_completion.py`](./05_openai_chat_completion.py).
 
-## The Complete Python Script
+## Paste this
 
-Below is the complete prompt compiler contained in [`01_chatgpt_prompt_patterns.py`](./01_chatgpt_prompt_patterns.py):
+```text
+You are an analytics editor reviewing operational records.
 
-```python
-"""
-Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: ChatGPT Everyday Prompt Patterns for Data Work
-Series: Learn ChatGPT / Everyday Workflows
-License: MIT
-"""
+Ground every claim in the records below. If a number is not in the records, write UNKNOWN. Do not invent a cause.
 
-import json
-import os
-from typing import Dict, Any
+Return four sections, in this order:
+1) What changed
+2) Risks
+3) Key metrics (quote the numbers)
+4) Recommended action
 
-def generate_analytics_summary_prompt(data_records: list[dict], metric_goal: str) -> str:
-    """
-    Constructs a disciplined, few-shot prompt with strict guardrails
-    banning invented numbers and enforcing structured JSON output.
-    """
-    return f"""You are an analytics editor reviewing operational records.
-
-### Context:
-Goal: {metric_goal}
-Input Data:
-{json.dumps(data_records, indent=2)}
-
-### Strict Rules:
-1. Ground every claim directly in the input data. Never invent metrics or extrapolate without stating assumptions.
-2. Return ONLY valid JSON with keys: "shipped", "risks", "key_metrics", "recommended_action".
-3. Use concise, active voice sentences.
-"""
-
-if __name__ == "__main__":
-    sample_records = [
-        {"week": "2025-W10", "signups": 1420, "activation_rate": 0.68, "server_errors": 12},
-        {"week": "2025-W11", "signups": 1580, "activation_rate": 0.62, "server_errors": 48}
-    ]
-    prompt = generate_analytics_summary_prompt(sample_records, "Identify activation and reliability trends")
-    print("=== Compiled ChatGPT Prompt ===")
-    print(prompt)
+Records:
+- 2025-W10: 1420 signups, activation rate 0.68, 12 server errors
+- 2025-W11: 1580 signups, activation rate 0.62, 48 server errors
 ```
 
----
+## What a useful answer looks like
 
-## Key Prompt Components
+The activation rate fell from 0.68 to 0.62 while server errors rose from 12 to 48. Signups rose from 1420 to 1580. The prompt does not say those two moves share a cause, so the answer should not invent one.
 
-1. **Delimited Context:** Data is wrapped in clear JSON blocks, preventing the model from confusing instruction text with user payload.
-2. **Negative Constraints:** Explicitly commanding `"Never invent metrics"` dramatically suppresses hallucinated numbers.
-3. **Structured Schema Output:** Demanding `"Return ONLY valid JSON"` allows downstream automation scripts to parse the model output safely.
+## Next
 
----
-
-## How to Run
-
-```bash
-python3 chatgpt/01_chatgpt_prompt_patterns.py
-```
-
-👉 Next: [Part 2: Codex Sandbox & Safe Repo Exploration](./02_codex_sandbox_repo_exploration.md)
+[Codex sandbox](./02_codex_sandbox_repo_exploration.md)

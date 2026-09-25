@@ -1,64 +1,131 @@
-# AI Engineering: Unified LLM Client
+# The same question against OpenAI, xAI, or Anthropic
 
-> **Official Companion Guide for [Analytics Made Simple: Chat APIs](https://analyticsmadesimple.com/tutorials/)**
-> Raw Script: [`02_llm_api_unified_client.py`](./02_llm_api_unified_client.py)
+> **Official companion for [Analytics Made Simple](https://analyticsmadesimple.com/tutorials/)**
+> Raw script: [`02_llm_api_unified_client.py`](./02_llm_api_unified_client.py)
 
-Learn how to structure multi-provider LLM integrations across OpenAI, Anthropic, and xAI with a uniform, interchangeable interface.
+Pick one provider on the command line. The script calls that provider's HTTP API and prints the text. It does not call the other two, and it does not fill in a fake answer.
 
----
-
-## The Complete Python Script
-
-Below is the complete script contained in [`02_llm_api_unified_client.py`](./02_llm_api_unified_client.py):
+## The script
 
 ```python
 """
 Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: Universal LLM API Client (OpenAI, Claude, xAI)
+Tutorial: One question, three real APIs
 License: MIT
+
+Usage:
+  export OPENAI_API_KEY=...    && python3 02_llm_api_unified_client.py openai
+  export XAI_API_KEY=...       && python3 02_llm_api_unified_client.py xai
+  export ANTHROPIC_API_KEY=... && python3 02_llm_api_unified_client.py anthropic
+
+OpenAI and xAI use POST /v1/chat/completions. Anthropic uses POST /v1/messages.
+Model ids default to the ids documented when this file was written. Override with
+OPENAI_MODEL, XAI_MODEL, or ANTHROPIC_MODEL.
+The script stops when the key for the provider you named is missing.
 """
 
+import json
 import os
-from typing import Optional
+import sys
+import urllib.error
+import urllib.request
 
-class SimpleLLMClient:
-    """Minimal unified client wrapper for commercial LLM APIs."""
-    def __init__(self, provider: str = "openai", api_key: Optional[str] = None):
-        self.provider = provider.lower()
-        self.api_key = api_key or os.getenv(f"{self.provider.upper()}_API_KEY", "mock_key")
-        
-    def generate(self, prompt: str, system_prompt: str = "You are a helpful data assistant.") -> str:
-        """Simulate or call the corresponding API endpoint."""
-        print(f"[{self.provider.upper()}] Querying model with system: '{system_prompt[:30]}...'")
-        return f"Mock response from {self.provider} for prompt: '{prompt[:40]}...'"
+PROVIDERS = {
+    "openai": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "env": "OPENAI_API_KEY",
+        "model_env": "OPENAI_MODEL",
+        "model": "gpt-5.2",
+        "style": "openai",
+    },
+    "xai": {
+        "url": "https://api.x.ai/v1/chat/completions",
+        "env": "XAI_API_KEY",
+        "model_env": "XAI_MODEL",
+        "model": "grok-4.7",
+        "style": "openai",
+    },
+    "anthropic": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "env": "ANTHROPIC_API_KEY",
+        "model_env": "ANTHROPIC_MODEL",
+        "model": "claude-sonnet-4-5",
+        "style": "anthropic",
+    },
+}
+
+QUESTION = "In two sentences, what does grain mean for an orders table?"
+
+
+def post(url: str, headers: dict, payload: dict) -> dict:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode(),
+        headers=headers,
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode(errors="replace")
+        sys.exit(f"HTTP {exc.code} from {url}: {detail}")
+
+
+def main() -> None:
+    if len(sys.argv) != 2 or sys.argv[1] not in PROVIDERS:
+        names = "|".join(PROVIDERS)
+        sys.exit(f"Usage: python3 02_llm_api_unified_client.py {names}")
+    spec = PROVIDERS[sys.argv[1]]
+    api_key = os.environ.get(spec["env"])
+    if not api_key:
+        sys.exit(f"Set {spec['env']} and run again.")
+    model = os.environ.get(spec["model_env"], spec["model"])
+    if spec["style"] == "openai":
+        payload = post(
+            spec["url"],
+            {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            {
+                "model": model,
+                "messages": [{"role": "user", "content": QUESTION}],
+            },
+        )
+        print(payload["choices"][0]["message"]["content"])
+        return
+    payload = post(
+        spec["url"],
+        {
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+        },
+        {
+            "model": model,
+            "max_tokens": 300,
+            "messages": [{"role": "user", "content": QUESTION}],
+        },
+    )
+    print(payload["content"][0]["text"])
+
 
 if __name__ == "__main__":
-    for p in ["openai", "anthropic", "xai"]:
-        client = SimpleLLMClient(provider=p)
-        print(client.generate("Explain grain in data modeling."))
+    main()
 ```
 
----
-
-## Execution Output
-
-```text
-[OPENAI] Querying model with system: 'You are a helpful data assista...'
-Mock response from openai for prompt: 'Explain grain in data modeling....'
-
-[ANTHROPIC] Querying model with system: 'You are a helpful data assista...'
-Mock response from anthropic for prompt: 'Explain grain in data modeling....'
-
-[XAI] Querying model with system: 'You are a helpful data assista...'
-Mock response from xai for prompt: 'Explain grain in data modeling....'
-```
-
----
-
-## How to Run
+## How to run
 
 ```bash
-python3 ai-engineering/02_llm_api_unified_client.py
+export OPENAI_API_KEY=your_key
+python3 02_llm_api_unified_client.py openai
 ```
 
-👉 Next: [Part 3: Vector Search from Scratch in SQLite](./03_vector_search_sqlite.md)
+If the key or the SDK is missing, the script stops. It does not print a made-up answer.
+
+Anthropic uses `POST /v1/messages` with the `x-api-key` and `anthropic-version: 2023-06-01` headers. OpenAI and xAI use `POST /v1/chat/completions`.
+
+## Next
+
+[SQLite cosine search](./03_vector_search_sqlite.md)

@@ -1,50 +1,23 @@
-# Grok Tutorial 3: Real-Time Live Search & Verification
+# Grok prompt: verify a claim and cite the page
 
-> **Official Companion Guide for [Analytics Made Simple: Grok Live Search](https://analyticsmadesimple.com/series/grok/)**
-> Raw Script: [`03_grok_live_search_verification.py`](./03_grok_live_search_verification.py)
+> **Official companion for [Learn Grok](https://analyticsmadesimple.com/series/grok/)**
 
-Leverage Grok's native live search integration to verify technical claims and extract timestamped primary sources.
+This file is a prompt for a Grok chat that can search. Paste it. It does not search by itself.
 
----
+A Python call to the xAI API, without search, is [`01_xai_api_client.py`](./01_xai_api_client.py).
 
-## The Complete Python Script
+## Paste this
 
-Below is the code contained in [`03_grok_live_search_verification.py`](./03_grok_live_search_verification.py):
+```text
+Check this claim against pages on duckdb.org. Use search.
 
-```python
-"""
-Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: Real-Time Live Search & Verification with Grok
-Series: Grok Everyday Tutorial
-License: MIT
-"""
+Claim: "DuckDB 1.2 added window-function optimizations."
 
-def build_verification_prompt(claim: str, domain_filter: str) -> str:
-    """Constructs a search prompt demanding live source citations."""
-    return f"""You are a research verifier with real-time web search capabilities.
-
-### Topic / Claim to Verify:
-"{claim}"
-
-### Verification Rules:
-1. Search real-time sources within domain: {domain_filter}
-2. Output a confidence assessment: [CONFIRMED, REFUTED, or INCONCLUSIVE].
-3. Provide at least two direct citation URLs with timestamps.
-4. Distinguish between official company releases and social speculation.
-"""
-
-if __name__ == "__main__":
-    prompt = build_verification_prompt("DuckDB 1.2 release feature set and window function optimizations", "duckdb.org")
-    print("=== Grok Live Verification Prompt ===")
-    print(prompt)
+Reply with one label: CONFIRMED, REFUTED, or INCONCLUSIVE.
+Then give two URLs you actually opened, and one sentence on what each page says.
+If you cannot open a page, say so. Do not invent a URL.
 ```
 
----
+## Next
 
-## How to Run
-
-```bash
-python3 grok/03_grok_live_search_verification.py
-```
-
-👉 Next: [Part 4: Grok Imagine Visual Prompt Engineering](./04_grok_imagine_prompt_engineering.md)
+[Imagine prompt](./04_grok_imagine_prompt_engineering.md)

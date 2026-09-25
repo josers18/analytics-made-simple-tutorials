@@ -1,51 +1,23 @@
-# Gemini Tutorial 2: Multimodal Document & Invoice Analysis
+# Gemini prompt: read an invoice without guessing
 
-> **Official Companion Guide for [Analytics Made Simple: Gemini Multimodal](https://analyticsmadesimple.com/series/gemini/)**
-> Raw Script: [`02_multimodal_document_analysis.py`](./02_multimodal_document_analysis.py)
+> **Official companion for [Learn Gemini](https://analyticsmadesimple.com/series/gemini/)**
 
-Extract structured tabular records from receipts, scanned invoices, and dashboard screenshots using Gemini's native multimodal vision capabilities.
+This file is a prompt. Attach the invoice image in Gemini, then paste the text. The prompt does not see an image on its own, and there is no Python wrapper that pretends it did.
 
----
+For a text call you can run locally, use [`01_gemini_api_quickstart.py`](./01_gemini_api_quickstart.py).
 
-## The Complete Python Script
+## Paste this with the image
 
-Below is the code contained in [`02_multimodal_document_analysis.py`](./02_multimodal_document_analysis.py):
+```text
+Read the attached invoice. Extract only these fields:
+invoice_number, vendor_name, invoice_date, subtotal, tax_amount, total_amount
 
-```python
-"""
-Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: Multimodal Image & Document Analysis with Gemini
-Series: Gemini Everyday & Multimodal
-License: MIT
-"""
-
-def build_multimodal_extraction_prompt(fields_to_extract: list[str]) -> str:
-    """Builds a schema-enforced prompt for visual document inspection."""
-    return f"""You are an automated document parsing engine.
-Inspect the attached invoice / screenshot image carefully.
-
-Extract the following required fields:
-{fields_to_extract}
-
-### Output Rules:
-- Return ONLY valid JSON.
-- If a field is blurred, obscured, or missing, set its value to null. Never guess numbers.
-- Transcribe currency values as pure decimal floats (e.g. 1450.00, not '$1,450.00').
-"""
-
-if __name__ == "__main__":
-    fields = ["invoice_number", "vendor_name", "invoice_date", "subtotal", "tax_amount", "total_amount"]
-    prompt = build_multimodal_extraction_prompt(fields)
-    print("=== Compiled Multimodal Document Prompt ===")
-    print(prompt)
+Return JSON.
+If a field is blurred, cut off, or absent, set it to null.
+Write money as a decimal number, such as 1450.00, not "$1,450.00".
+Do not guess a digit you cannot see.
 ```
 
----
+## Next
 
-## How to Run
-
-```bash
-python3 gemini/02_multimodal_document_analysis.py
-```
-
-👉 Next: [Part 3: Gemini CLI & Antigravity Terminal Workflows](./03_gemini_cli_antigravity_workflows.md)
+[Gemini CLI notes](./03_gemini_cli_antigravity_workflows.md)

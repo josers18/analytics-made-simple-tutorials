@@ -1,31 +1,72 @@
 """
 Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: xAI Grok Console & REST API Client
-Series: Grok API & Console Tutorial
+Tutorial: xAI Grok REST API
+https://analyticsmadesimple.com/series/grok/
 License: MIT
+
+Run: export XAI_API_KEY=... && python3 01_xai_api_client.py
+Uses the documented Responses endpoint, https://api.x.ai/v1/responses, via the stdlib.
+Override the model with XAI_MODEL if the default id has moved.
+The script stops when the key is missing. It does not invent a reply.
 """
 
+import json
 import os
-from typing import Optional
+import sys
+import urllib.error
+import urllib.request
 
-class XAIClient:
-    """Minimal client for xAI Grok models using standard REST endpoints."""
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("XAI_API_KEY", "mock_key")
-        self.base_url = "https://api.x.ai/v1"
-        self.model = "grok-4.6"
-        
-    def generate_completion(self, user_prompt: str, system_prompt: str = "You are a factual data analyst.") -> dict:
-        """Call xAI responses API endpoint."""
-        print(f"[xAI API] Querying {self.model} via {self.base_url}...")
-        return {
-            "model": self.model,
-            "prompt": user_prompt,
-            "response": "One row is one completed shipment. Columns: ship_date (DATE), units (INT), region (TEXT). Grain: unique ship_id."
+
+def response_text(payload: dict) -> str:
+    if isinstance(payload.get("output_text"), str):
+        return payload["output_text"]
+    chunks = []
+    for item in payload.get("output") or []:
+        if not isinstance(item, dict):
+            continue
+        content = item.get("content")
+        if isinstance(content, list):
+            for part in content:
+                if isinstance(part, dict) and part.get("text"):
+                    chunks.append(part["text"])
+        elif isinstance(item.get("text"), str):
+            chunks.append(item["text"])
+    if chunks:
+        return "\n".join(chunks)
+    try:
+        return payload["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        return json.dumps(payload, indent=2)
+
+
+def main() -> None:
+    api_key = os.environ.get("XAI_API_KEY")
+    if not api_key:
+        sys.exit("Set XAI_API_KEY and run again.")
+    model = os.environ.get("XAI_MODEL", "grok-4.7")
+    body = json.dumps(
+        {
+            "model": model,
+            "input": "In two sentences, define grain for an orders table. Do not invent column names beyond order_id.",
         }
+    ).encode()
+    request = urllib.request.Request(
+        "https://api.x.ai/v1/responses",
+        data=body,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            payload = json.loads(response.read().decode())
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode(errors="replace")
+        sys.exit(f"xAI API returned HTTP {exc.code}: {detail}")
+    print(response_text(payload))
+
 
 if __name__ == "__main__":
-    client = XAIClient()
-    res = client.generate_completion("Define the grain and schema for an e-commerce shipping table.")
-    print("=== Grok Response ===")
-    print(res["response"])
+    main()

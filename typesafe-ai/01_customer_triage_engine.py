@@ -1,86 +1,93 @@
 """
 Analytics Made Simple (analyticsmadesimple.com)
-Tutorial: Jev and TypeSafe AI: The Fast Decision Layer for Software
-Canonical Article: https://analyticsmadesimple.com/tutorials/jev-typesafe-ai-system-one-model-rlcd-tutorial/
+Tutorial: Jev and TypeSafe AI
+https://analyticsmadesimple.com/tutorials/jev-typesafe-ai-system-one-model-rlcd-tutorial/
 License: MIT
 
-Description:
-A calibrated, 110ms customer refund and ticket triage service using TypeSafe AI
-and Jev (the first System One decision model). Replaces brittle regular expressions
-and slow 2,500ms LLM prompt-and-parse pipelines with fast, deterministic machine-native logic.
+Install: pip install typesafe-sdk
+Run:     export TYPESAFE_API_KEY=... && python3 01_customer_triage_engine.py
+
+The SDK returns response.choices, response.scores, and response.nouls.
+There is no response.answers attribute.
+The script stops when the key or the SDK is missing. It does not keyword-match the ticket.
 """
 
 import os
-from dataclasses import dataclass
-from typing import Optional
+import sys
 
-# Mock interface for TypeSafe SDK primitives
-@dataclass
-class DecisionResult:
-    choice: str
-    confidence: float
-    reasoning_code: str
 
-class TypeSafeClient:
-    """TypeSafe AI decision layer client."""
-    def __init__(self, api_key: Optional[str] = None):
-        self.api_key = api_key or os.getenv("TYPESAFE_API_KEY", "mock_key")
+def main() -> None:
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("Set TYPESAFE_API_KEY and run again.")
+    try:
+        from typesafe_sdk import Choice, Noul, Score, TypeSafeClient
+    except ImportError:
+        sys.exit("Install the SDK first: pip install typesafe-sdk")
 
-    def decide(self, context: dict, question: str, choices: list[str]) -> DecisionResult:
-        """Execute calibrated System One judgment."""
-        text = str(context.get("message", "")).lower()
-        if "refund" in text or "money back" in text or "charged twice" in text:
-            return DecisionResult("refund_request", 0.96, "DEC_FIN_REFUND")
-        elif "password" in text or "login" in text or "locked out" in text:
-            return DecisionResult("account_access", 0.94, "DEC_AUTH_RESET")
-        elif "broken" in text or "bug" in text or "error" in text:
-            return DecisionResult("technical_issue", 0.91, "DEC_TECH_BUG")
-        return DecisionResult("general_inquiry", 0.72, "DEC_GEN_SUPPORT")
-
-def triage_incoming_ticket(customer_id: int, message: str, customer_tier: str) -> dict:
-    """Triage incoming tickets with calibrated confidence gating."""
-    client = TypeSafeClient()
-    
-    context = {
-        "customer_id": customer_id,
-        "message": message,
-        "tier": customer_tier
+    customer_state = {
+        "ticket": {
+            "id": "TICK-9042",
+            "customer_tier": "enterprise_gold",
+            "message": (
+                "Your system charged our corporate card $499 twice for invoice INV-2024-09. "
+                "We only authorized a single charge. Please reverse the duplicate payment immediately."
+            ),
+        },
+        "billing_ledger": {
+            "invoice_id": "INV-2024-09",
+            "authorized_amount": 499.00,
+            "recorded_charges": [
+                {"charge_id": "ch_101", "amount": 499.00, "status": "captured", "timestamp": "2026-09-20T14:10:02Z"},
+                {"charge_id": "ch_102", "amount": 499.00, "status": "captured", "timestamp": "2026-09-20T14:10:05Z"},
+            ],
+        },
+        "refund_policy": (
+            "Duplicate charges occurring within a 60-second window for the same invoice "
+            "are classified as processing errors and are eligible for instant automated reversal."
+        ),
     }
-    
-    decision = client.decide(
-        context=context,
-        question="What is the primary customer intent?",
-        choices=["refund_request", "account_access", "technical_issue", "general_inquiry"]
-    )
-    
-    # Fast deterministic routing logic based on calibrated confidence
-    action = "escalate_to_human"
-    if decision.confidence >= 0.90:
-        if decision.choice == "refund_request" and customer_tier == "Enterprise":
-            action = "auto_approve_immediate_credit"
-        elif decision.choice == "account_access":
-            action = "send_magic_reset_link"
-        else:
-            action = "route_to_specialized_queue"
-            
-    return {
-        "customer_id": customer_id,
-        "detected_intent": decision.choice,
-        "confidence": decision.confidence,
-        "reasoning_code": decision.reasoning_code,
-        "automated_action": action
+    questions = {
+        "primary_intent": Choice(
+            instructions="What is the primary request in `ticket.message`?",
+            criteria={
+                "refund_request": "Customer explicitly demands return of funds or duplicate charge reversal",
+                "subscription_cancellation": "Customer wants to terminate service or close account",
+                "technical_support": "Customer reports software bugs, outage, or broken features",
+                "general_inquiry": "Customer requests documentation, pricing details, or receipts",
+            },
+        ),
+        "customer_frustration": Score(
+            instructions="Score the level of customer agitation in `ticket.message`",
+            criteria=[
+                "Calm, neutral, and matter-of-fact",
+                "Firm and concerned, but civil",
+                "Severely agitated, threatening cancellation or legal action",
+            ],
+        ),
+        "policy_eligible_refund": Noul(
+            instructions=(
+                "Does `billing_ledger.recorded_charges` demonstrate a duplicate charge "
+                "eligible for immediate refund under `refund_policy`?"
+            )
+        ),
     }
+    with TypeSafeClient() as client:
+        response = client.system_one(state=customer_state, questions=questions)
+
+    intent = response.choices["primary_intent"]
+    frustration = response.scores["customer_frustration"]
+    refund_eligibility = response.nouls["policy_eligible_refund"]
+    print(f"Primary Intent: {intent.choice} (Confidence: {intent.confidence:.2f})")
+    print(f"Frustration Score: {frustration.score:.2f} / 2.0 (Confidence: {frustration.confidence:.2f})")
+    print(f"Policy Refund Probability: {refund_eligibility.noul:.2f}")
+
+    if intent.choice == "refund_request" and refund_eligibility.noul > 0.90:
+        print("SUCCESS: High-confidence duplicate charge verified. Triggering automated payment reversal...")
+    elif frustration.score > 1.5:
+        print("ESCALATION: Customer is severely agitated. Paging high-priority Tier-2 on-call...")
+    else:
+        print("ROUTING: Assigning ticket to standard customer billing queue.")
+
 
 if __name__ == "__main__":
-    test_cases = [
-        (101, "I was charged twice for subscription renew on invoice #901!", "Enterprise"),
-        (102, "I forgot my password and cannot sign in on my mobile app.", "Standard"),
-        (103, "Where do I find your office location?", "Standard")
-    ]
-    
-    print("=== TypeSafe AI System One Triage Execution ===")
-    for cid, msg, tier in test_cases:
-        res = triage_incoming_ticket(cid, msg, tier)
-        print(f"\nCustomer {res['customer_id']} ({tier}): '{msg}'")
-        print(f"  -> Intent: {res['detected_intent']} (Confidence: {res['confidence']:.2f})")
-        print(f"  -> Action: {res['automated_action']}")
+    main()
