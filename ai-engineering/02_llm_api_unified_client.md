@@ -19,7 +19,7 @@ Usage:
   export ANTHROPIC_API_KEY=... && python3 02_llm_api_unified_client.py anthropic
 
 OpenAI and xAI use POST /v1/chat/completions. Anthropic uses POST /v1/messages.
-Model ids default to the ids documented when this file was written. Override with
+Model ids default to the ids on each vendor's models page on October 8, 2026. Override with
 OPENAI_MODEL, XAI_MODEL, or ANTHROPIC_MODEL.
 The script stops when the key for the provider you named is missing.
 """
@@ -35,7 +35,7 @@ PROVIDERS = {
         "url": "https://api.openai.com/v1/chat/completions",
         "env": "OPENAI_API_KEY",
         "model_env": "OPENAI_MODEL",
-        "model": "gpt-5.2",
+        "model": "gpt-6.1-sol",
         "style": "openai",
     },
     "xai": {
@@ -49,7 +49,7 @@ PROVIDERS = {
         "url": "https://api.anthropic.com/v1/messages",
         "env": "ANTHROPIC_API_KEY",
         "model_env": "ANTHROPIC_MODEL",
-        "model": "claude-sonnet-4-5",
+        "model": "claude-sonnet-5-5",
         "style": "anthropic",
     },
 }

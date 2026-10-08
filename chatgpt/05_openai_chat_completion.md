@@ -3,7 +3,7 @@
 > **Official companion for [Learn ChatGPT](https://analyticsmadesimple.com/series/chatgpt/)**
 > Raw script: [`05_openai_chat_completion.py`](./05_openai_chat_completion.py)
 
-This script imports `openai`, sends two weeks of records, and asks for JSON with four keys: shipped, risks, key_metrics, recommended_action. The model id defaults to `gpt-5.2`. Set `OPENAI_MODEL` if that id has moved.
+This script imports `openai`, sends two weeks of records, and asks for JSON with four keys: shipped, risks, key_metrics, recommended_action. The model id defaults to `gpt-6.1-sol`, from OpenAI's models page on October 8, 2026. Set `OPENAI_MODEL` if that id has moved.
 
 ## The script
 
@@ -54,7 +54,7 @@ def main() -> None:
     except ImportError:
         sys.exit("Install the SDK first: pip install openai")
 
-    model = os.environ.get("OPENAI_MODEL", "gpt-5.2")
+    model = os.environ.get("OPENAI_MODEL", "gpt-6.1-sol")
     client = OpenAI()
     completion = client.chat.completions.create(
         model=model,

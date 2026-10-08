@@ -44,7 +44,7 @@ def main() -> None:
     except ImportError:
         sys.exit("Install the SDK first: pip install openai")
 
-    model = os.environ.get("OPENAI_MODEL", "gpt-5.2")
+    model = os.environ.get("OPENAI_MODEL", "gpt-6.1-sol")
     client = OpenAI()
     completion = client.chat.completions.create(
         model=model,
