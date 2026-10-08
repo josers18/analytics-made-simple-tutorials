@@ -6,3 +6,4 @@ The scripts call `typesafe-sdk` and read `response.choices`, `response.scores`, 
 |---|---|---|---|
 | Ticket triage | Live System One call on a duplicate-charge ticket | [01_customer_triage_engine.py](./01_customer_triage_engine.py) | [Jev tutorial](https://analyticsmadesimple.com/tutorials/jev-typesafe-ai-system-one-model-rlcd-tutorial/) |
 | Payment route | Live choice and score, then a local if | [02_sentiment_and_routing_pipeline.py](./02_sentiment_and_routing_pipeline.py) | [System One](https://analyticsmadesimple.com/tutorials/system-one-models-fast-decision-layer-for-software/) |
+| Switch vendors | One request in the Jev shape, rewritten for the OpenAI Decisions API (offline, no key) | [03_jev_to_openai_decisions_adapter.py](./03_jev_to_openai_decisions_adapter.py) · [walkthrough](./03_jev_to_openai_decisions_adapter.md) | [Jev alternatives](https://analyticsmadesimple.com/tutorials/jev-alternatives-paid-open-source-decision-models/) |
