@@ -15,6 +15,7 @@ Official open-source companion for the Claude Code and terminal agent engineerin
 | **Instruction Templates** | Production `CLAUDE.md` and `AGENTS.md` configuration files for analytics | [`02_instruction_templates/`](./02_instruction_templates/) |
 | **Automated Review Workflow** | Shell script executing automated pre-commit code reviews | [`03_automated_code_review_workflow.sh`](./03_automated_code_review_workflow.sh) · [Guide](./03_automated_code_review_workflow.md) |
 | **Data Analyst Agent Guide** | Workflows for schema audits, SQL-to-Python translation, and documentation | [04_data_analyst_agent_guide.md](./04_data_analyst_agent_guide.md) |
+| **Your First Mod** | A Claude Code mod that counts tool calls beside the spinner, with the validate output | [`05_first_mod/`](./05_first_mod/) · [Guide](./05_first_mod.md) |
 
 ---
 
