@@ -1,5 +1,5 @@
 # Analytics Made Simple (analyticsmadesimple.com)
-# Tutorial: How to let Claude or ChatGPT query your data warehouse safely through MCP (https://analyticsmadesimple.com/tutorials/mcp-data-warehouse-read-only-ai-access/)
+# Tutorial: How to let Claude or ChatGPT read your company's database without risking your data (https://analyticsmadesimple.com/tutorials/mcp-data-warehouse-read-only-ai-access/)
 # License: MIT
 #
 # A small MCP server that lets an AI query a Postgres database through a read-only login.
