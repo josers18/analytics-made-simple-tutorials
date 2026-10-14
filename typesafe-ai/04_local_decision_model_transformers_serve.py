@@ -1,5 +1,5 @@
 # Analytics Made Simple (analyticsmadesimple.com)
-# Tutorial: How to run your own decision model for free with Hugging Face transformers (https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
+# Tutorial: How to run a free AI model that sorts tickets on your own computer with Hugging Face (https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
 # License: MIT
 #
 # Routes practice support tickets with a small local open model through `transformers serve`

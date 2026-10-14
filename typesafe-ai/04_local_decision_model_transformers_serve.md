@@ -1,6 +1,6 @@
-# How to run your own decision model for free with Hugging Face transformers
+# How to run a free AI model that sorts tickets on your own computer with Hugging Face
 
-> Companion code for the Analytics Made Simple guide: [How to run your own decision model for free with Hugging Face transformers](https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
+> Companion code for the Analytics Made Simple guide: [How to run a free AI model that sorts tickets on your own computer with Hugging Face](https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
 
 > Raw Script: [`04_local_decision_model_transformers_serve.py`](./04_local_decision_model_transformers_serve.py)
 
@@ -81,7 +81,7 @@ Output (probabilities rounded):
 
 ```python
 # Analytics Made Simple (analyticsmadesimple.com)
-# Tutorial: How to run your own decision model for free with Hugging Face transformers (https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
+# Tutorial: How to run a free AI model that sorts tickets on your own computer with Hugging Face (https://analyticsmadesimple.com/tutorials/run-your-own-decision-model-transformers-serve/)
 # License: MIT
 #
 # Routes practice support tickets with a small local open model through `transformers serve`
