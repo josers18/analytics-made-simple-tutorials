@@ -13,8 +13,8 @@ import urllib.error
 import urllib.request
 
 URL = "http://localhost:8000/v1/systemone"
-SMALL = "Qwen/Qwen2.5-1.5B-Instruct"
-BIG = "Qwen/Qwen2.5-7B-Instruct"  # set to None to skip the second model
+SMALL = "Qwen/Qwen3.5-2B"
+BIG = "Qwen/Qwen3.5-9B"  # set to None to skip the second model
 BAR = 0.80  # below this confidence, pass the ticket on
 
 TEAMS = {

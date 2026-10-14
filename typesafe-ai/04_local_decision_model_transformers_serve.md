@@ -11,9 +11,9 @@ As of October 14, 2026 the endpoint is only on the transformers `main` branch (m
 ## How it flows
 
 ```text
-ticket ──> small model (Qwen2.5-1.5B) ── confidence >= 0.80 ──> team
+ticket ──> small model (Qwen3.5-2B) ── confidence >= 0.80 ──> team
                     │
-                    └─ below 0.80 ──> big model (Qwen2.5-7B) ── >= 0.80 ──> team
+                    └─ below 0.80 ──> big model (Qwen3.5-9B) ── >= 0.80 ──> team
                                               │
                                               └─ below 0.80 ──> person
 ```
@@ -23,11 +23,11 @@ ticket ──> small model (Qwen2.5-1.5B) ── confidence >= 0.80 ──> team
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install torch "transformers[serving] @ git+https://github.com/huggingface/transformers.git"
+pip install torch torchvision pillow "transformers[serving] @ git+https://github.com/huggingface/transformers.git"
 transformers serve          # leave this running; it loads each model on first use
 ```
 
-The small model is 2.9 GB on disk and the 7B model 14 GB. Both download automatically on first use.
+Qwen3.5 can also read images, so the server needs `torchvision` and `pillow` to load it. Qwen3.5-2B is 4.3 GB on disk and Qwen3.5-9B is 18 GB. Both download automatically on first use.
 
 ## One question with curl
 
@@ -35,7 +35,7 @@ The small model is 2.9 GB on disk and the 7B model 14 GB. Both download automati
 curl -s http://localhost:8000/v1/systemone \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "Qwen/Qwen2.5-1.5B-Instruct",
+    "model": "Qwen/Qwen3.5-2B",
     "state": "I was charged twice for my October invoice.",
     "questions": {
       "team": {
@@ -55,25 +55,27 @@ Output (probabilities rounded):
 
 ```json
 {
-  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "model": "Qwen/Qwen3.5-2B",
   "answers": {
     "team": {
       "type": "choice",
       "choice": "billing",
       "probabilities": {
-        "billing": 0.999985,
-        "technical": 1e-05,
-        "account": 5e-06
+        "billing": 0.9936,
+        "technical": 0.0028,
+        "account": 0.0036
       },
-      "confidence": 0.999977
+      "confidence": 0.9904
     }
   },
   "usage": {
-    "input_tokens": 104,
+    "input_tokens": 89,
     "output_tokens": 0
   }
 }
 ```
+
+`confidence` is lower than the top probability when the probabilities are spread across options; the script's `BAR` compares against it.
 
 ## The script
 
@@ -93,8 +95,8 @@ import urllib.error
 import urllib.request
 
 URL = "http://localhost:8000/v1/systemone"
-SMALL = "Qwen/Qwen2.5-1.5B-Instruct"
-BIG = "Qwen/Qwen2.5-7B-Instruct"  # set to None to skip the second model
+SMALL = "Qwen/Qwen3.5-2B"
+BIG = "Qwen/Qwen3.5-9B"  # set to None to skip the second model
 BAR = 0.80  # below this confidence, pass the ticket on
 
 TEAMS = {
@@ -155,7 +157,7 @@ if __name__ == "__main__":
 
 | Part | What it does |
 |---|---|
-| `TEAMS` | The allowed answers and a one-line description of each. The `other` option matters: without it the small model put "Do you have an office in Berlin?" under technical. |
+| `TEAMS` | The allowed answers and a one-line description of each. The `other` option matters: without it, both models spread their bets on "Do you have an office in Berlin?" across the three real teams. |
 | `decide()` | Sends one ticket and one `choice` question to `/v1/systemone` with Python's built-in `urllib`, and returns the `answers` object. |
 | `BAR` | The confidence below which a ticket is passed on. Pick it from your own labelled tickets, not from this example. |
 | `SMALL` / `BIG` | The first model and the one that handles the unsure cases. Set `BIG = None` to send unsure tickets straight to a person. |
@@ -163,21 +165,21 @@ if __name__ == "__main__":
 
 ## Output
 
-Run on an Apple M5 Max Mac on October 14, 2026, with the server already running:
+Run on an Apple M5 Max Mac on October 14, 2026, with the server running. The eight tickets are practice tickets written for this example.
 
 ```text
 ticket                                               team        conf  route
-I was charged twice for my October invoice.          billing     1.00  billing
+I was charged twice for my October invoice.          billing     0.97  billing
 Our integration has been failing for 3 days and we   technical   1.00  technical
-How do I add a new user to our team plan?            account     1.00  account
-The export button gives an error 500 every time.     technical   1.00  technical
-I forgot my password and the reset email never arr   account     1.00  account
-Can I get a refund for the seats we did not use?     billing     0.90  billing
-Your app is slow and my card was declined when I t   account     0.40  billing (big model)
-Do you have an office in Berlin?                     other       0.91  other
+How do I add a new user to our team plan?            account     0.98  account
+The export button gives an error 500 every time.     technical   0.99  technical
+I forgot my password and the reset email never arr   account     0.97  account
+Can I get a refund for the seats we did not use?     billing     0.39  billing (big model)
+Your app is slow and my card was declined when I t   billing     0.49  person
+Do you have an office in Berlin?                     account     0.12  person
 ```
 
-With the server's default settings, the 1.5B model answered each ticket in about 0.03 seconds and the 7B model in about 5 seconds, which is why only the unsure ticket goes to the 7B model.
+With the server's default settings, Qwen3.5-2B answered each ticket in about 0.2 seconds and Qwen3.5-9B in about 16 seconds, which is why only the three unsure tickets go to the 9B model.
 
 ## How to run
 
